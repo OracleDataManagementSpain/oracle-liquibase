@@ -5,7 +5,7 @@ import javax.persistence.*;
 @Table(name="Product")
 public class ProductEntity {
 	@Id @GeneratedValue
-	private int id;
+	private long id;
 
 	private String name;
 
@@ -16,11 +16,11 @@ public class ProductEntity {
 		this.name=name;
 	}
 
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id=id;
 	}
 
-	public int getId() {
+	public long getId() {
 		return this.id;
 	}
 

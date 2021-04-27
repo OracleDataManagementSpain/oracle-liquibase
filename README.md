@@ -126,7 +126,10 @@ runtimeOnly 'com.oracle.database.jdbc:ucp'
 
 * Add a CRUD repository interfaces for finding and delete by primary key  in Product Entity (see code in repository)
 
+* Add a controller for read, create and delete product (see code in repository)
+
 * Edit the application properties file, and set url (pointing to the wallet), user, password and oracle hibernate dialect (see code in repository)
+  * Check the URL: The name is based in dbname + service level, and the address of the wallet is relative to execution directoy
 
 
 

@@ -1,11 +1,20 @@
 server.port: 7000
 
 spring.datasource:
-  url: "jdbc:oracle:thin:@dbname_high?TNS_ADMIN=../keystore"
+  url: "jdbc:oracle:thin:@lbtest_tp?TNS_ADMIN=/Users/jmalbarran/Projects/ORA/ORA/PoC_LiquidBase/oracle-liquibase/keystore/wallet"
   username: admin
   password: 1UPPERCASE#1lowercase
 
 spring.jpa:
-  database-platform: org.hibernate.dialect.OracleDialect
+  database-platform: org.hibernate.dialect.Oracle10gDialect
   # show-sql=false
   # spring.jpa.hibernate.ddl-auto=create  
+
+# oracle.net.wallet_location: (SOURCE=(METHOD=FILE)(METHOD_DATA=(DIRECTORY=/Users/jmalbarran/Projects/ORA/ORA/PoC_LiquidBase/oracle-liquibase/keystore/wallet))
+
+# Properties for using Java KeyStore (JKS)
+# oracle.net.ssl_server_dn_match: true
+# javax.net.ssl.trustStore: /Users/jmalbarran/Projects/ORA/ORA/PoC_LiquidBase/oracle-liquibase/keystore/wallet/truststore.jks
+# javax.net.ssl.trustStorePassword: 1UPPERCASE#1lowercase
+# javax.net.ssl.keyStore: /Users/jmalbarran/Projects/ORA/ORA/PoC_LiquidBase/oracle-liquibase/keystore/wallet/keystore.jks
+# javax.net.ssl.keyStorePassword: 1UPPERCASE#1lowercase
