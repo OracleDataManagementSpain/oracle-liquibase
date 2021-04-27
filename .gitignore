@@ -26,4 +26,6 @@ hs_err_pid*
 # Project specif files
 # Environment and local user configuration parameters
 .env
+keystore
+
 
