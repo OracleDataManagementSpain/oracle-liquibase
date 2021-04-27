@@ -89,7 +89,7 @@ oci db autonomous-database create \
 	--wait-for-state AVAILABLE
 ```
 
-After creation, we need some parameters for later connections
+After creation, download the wallet for connection
 ```
 export ADB_ID=$(oci db autonomous-database list \
 	--profile EMEASPAINSANDBOX \
@@ -105,7 +105,30 @@ oci db autonomous-database generate-wallet \
 	--generate-type SINGLE 
 ```
 
+And uncompress the wallet in a well-know directory
+
 ### Create a SpringBoot sample project
+* Create an empty SpringBoot project, using the [initializr](https://start.spring.io/) wizard or directly using `spring init` command.
+* Add dependencies for web management, persistence,oracle database drivers and actuator (web,data-jpa,oracle,actuator,validation,devtools)
+
+```
+spring init --build=gradle --dependencies=web,data-jpa,oracle,actuator,validation,devtools  application
+```
+
+* Edit `build.gradle` generated file, and add this additional dependency
+```
+runtimeOnly 'com.oracle.database.jdbc:ucp'
+```
+
+* Add a Oracle Datasource Configuration bean (see code in repository)
+
+* Add an entity POJO class, mapping the PRODUCT table (see code in repository)
+
+* Add a CRUD repository interfaces for finding and delete by primary key  in Product Entity (see code in repository)
+
+* Edit the application properties file, and set url (pointing to the wallet), user, password and oracle hibernate dialect (see code in repository)
+
+
 
 
 

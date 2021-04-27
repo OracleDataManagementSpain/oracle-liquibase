@@ -1,0 +1,11 @@
+server.port: 7000
+
+spring.datasource:
+  url: "jdbc:oracle:thin:@dbname_high?TNS_ADMIN=../keystore"
+  username: admin
+  password: 1UPPERCASE#1lowercase
+
+spring.jpa:
+  database-platform: org.hibernate.dialect.OracleDialect
+  # show-sql=false
+  # spring.jpa.hibernate.ddl-auto=create  
