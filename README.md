@@ -11,28 +11,29 @@ We recommend always to use a package manager.
 
 In our case, we are using MacOS and Homebrew as package manager, so the installation commans will use this.
 ### Java
-* Check your installed java version. this sample requires openjava@11 or later
+* Check your installed java version. this sample requires Java 11 or later
+* Download the JDBC drivers maching the Java version and the Oracle Database version used. In this sample we are using openjdk@11 and Autonomous Database for JSON, currently using 19c. So, dowload ojdbc10 version from [here](https://www.oracle.com/database/technologies/appdev/jdbc-ucp-19-10-c-downloads.html)
 ### Gradle
 * [Download your Gradle flavor](https://gradle.org/install/) 
 
-MacOS
-```
-brew install gradle
-```
+  MacOS
+  ```
+  brew install gradle
+  ```
 
 ### Jenkins
 * [Download your Jenkins flavor](https://www.jenkins.io/download/)
 
   OSX Homebrew
-```
-brew install jenkins-lts
-brew services start jenkins-lts
-```
+  ```
+  brew install jenkins-lts
+  brew services start jenkins-lts
+  ```
 * Configure
-Get generated admin password from user home directory
-```
-cat ~/.jenkins/secrets/initialAdminPassword
-```
+  Get generated admin password from user home directory
+  ```
+  cat ~/.jenkins/secrets/initialAdminPassword
+  ```
 
 * Connect to http://localhost:8080 to end configuration. Paste the admin password, and select initial set of plugins
 * Create administrator user and password. Optionally, set the e-mail address
@@ -56,6 +57,16 @@ brew install gcc
 brew install liquibase
 liquibase --help
 ```
+* [Download the Oracle JDBC drivers version 10](https://www.oracle.com/database/technologies/appdev/jdbc-downloads.html) and copy to liquibase lib directory. NOTICE: Use jdbc10 drivers, jdbc8 does not work!!!
+  OSX Homebrew
+```
+cd /usr/local/Cellar/liquibase/4.3.4/libexec/lib
+cp ~/Downloads/ojdbc8-full.tar.gz .
+tar -xvzf ojdbc10-full.tar.gz
+mv OJDBC8-Full/* .
+rm -rf OJDBC8-Full/
+```
+
 
 
 ## Build application sample (version 1)
@@ -105,7 +116,9 @@ oci db autonomous-database generate-wallet \
 	--generate-type SINGLE 
 ```
 
-And uncompress the wallet in a well-know directory
+And uncompress the wallet in 2 well-known directory
+* First will be used to connect from the application
+* Second will be used to connecto from the liquibase client
 
 ### Create a SpringBoot sample project
 * Create an empty SpringBoot project, using the [initializr](https://start.spring.io/) wizard or directly using `spring init` command.
@@ -115,9 +128,14 @@ And uncompress the wallet in a well-know directory
 spring init --build=gradle --dependencies=web,data-jpa,oracle,actuator,validation,devtools  application
 ```
 
-* Edit `build.gradle` generated file, and add this additional dependency
+* Edit `build.gradle` generated file, and add oracle drivers additiinal depedencies (ojdbc8 artifact has to be already there)
 ```
-runtimeOnly 'com.oracle.database.jdbc:ucp'
+// Oracle Database Drivers
+implementation 'com.oracle.database.jdbc:ojdbc8'
+implementation 'com.oracle.database.jdbc:ucp'	
+implementation 'com.oracle.database.security:oraclepki'
+implementation 'com.oracle.database.security:osdt_cert'
+implementation 'com.oracle.database.security:osdt_core'
 ```
 
 * Add a Oracle Datasource Configuration bean (see code in repository)
@@ -129,7 +147,39 @@ runtimeOnly 'com.oracle.database.jdbc:ucp'
 * Add a controller for read, create and delete product (see code in repository)
 
 * Edit the application properties file, and set url (pointing to the wallet), user, password and oracle hibernate dialect (see code in repository)
-  * Check the URL: The name is based in dbname + service level, and the address of the wallet is relative to execution directoy
+  * Check the URL: The name is based in dbname + service level, and the address of the wallet is relative to execution directoy. Remember we are using 2 copies of wallet: Use the copy correponding to application (copy uncompressed and unedited)
+
+### Liquibase
+* Check the instruction to connect to [Oracle Autonomous Database](https://docs.liquibase.com/workflows/database-setup-tutorials/oracle-atp-db.html)
+* Edit the second wallet copy and edit:
+  * The `ojdbc.properties` file
+	  * Uncomment the javax.net.ssl properties lines
+		* Comment out the oracle.net.wallet_location line.
+		* Set javax.net.ssl.trustStorePassword to the wallet password (notice that this is the [admin-password](#provision-an-oci-autonomous-database) assigned to wallet when you downloaded)
+		* Set javax.net.ssl.keyStorePassword to the wallet password. (notice that this is the [admin-password](#provision-an-oci-autonomous-database)
+	* Check the `sqlnet.ora` file
+		* Parameter `SSL_SERVER_DN_MATCH=yes`
+* Generate the project folder structure
+```
+  mkdir <myproject>/database
+	mkdir <myproject>/database/changelogs
+	mkdir <myproject>/database/scripts
+```
+
+* Copy
+* Create a master change log file with `changelog_master.xml` in changelogs
+```
+<?xml version="1.0" encoding="UTF-8"?> 
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd">
+
+</databaseChangeLog>
+```
+
+
 
 
 
