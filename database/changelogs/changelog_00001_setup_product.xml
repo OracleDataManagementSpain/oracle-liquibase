@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext 
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd 
+		http://www.liquibase.org/xml/ns/pro 
+		http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.1.xsd 
+		http://www.liquibase.org/xml/ns/dbchangelog 
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd"
+>
+	<changeSet id="000010" author="Jose Manuel Albarran">
+		<comment>
+				Create initial sequence Product Seq
+			</comment>
+		<sqlFile
+			dbms="oracle"
+			endDelimiter=";"
+			path="../scripts/CreateSequence_Product_Seq.sql"
+			relativeToChangelogFile="true"
+			splitStatements="true"
+			stripComments="false" />
+		<rollback>
+			<sqlFile
+				dbms="oracle"
+				endDelimiter=";"
+				path="../scripts/DropSequence_Product_Seq.sql"
+				relativeToChangelogFile="true"
+				splitStatements="true"
+				stripComments="false" />
+		</rollback>
+	</changeSet>
+	<changeSet id="000020" author="Jose Manuel Albarran">
+		<comment>
+			Create initial table Product
+		</comment>
+		<sqlFile
+			dbms="oracle"
+			endDelimiter=";"
+			path="../scripts/CreateTable_Product.sql"
+			relativeToChangelogFile="true"
+			splitStatements="true"
+			stripComments="false" />
+		<rollback>
+			<sqlFile
+				dbms="oracle"
+				endDelimiter=";"
+				path="../scripts/DropTable_Product.sql"
+				relativeToChangelogFile="true"
+				splitStatements="true"
+				stripComments="false" />
+
+		</rollback>
+	</changeSet>
+	<changeSet id="000030" author="Jose Manuel Albarran">
+		<comment>
+			Create initial function getProductCount
+		</comment>
+		<sqlFile
+			dbms="oracle"
+			endDelimiter=";"
+			path="../scripts/CreateFunction_ProductCount.sql"
+			relativeToChangelogFile="true"
+			splitStatements="false"
+			stripComments="false" />
+		<rollback >
+			<sqlFile
+				dbms="oracle"
+				endDelimiter=";"
+				path="../scripts/DropFunction_ProductCount.sql"
+				relativeToChangelogFile="true"
+				splitStatements="false"
+				stripComments="false" />
+		</rollback>
+	</changeSet>
+</databaseChangeLog>

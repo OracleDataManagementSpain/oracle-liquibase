@@ -4,7 +4,9 @@ import javax.persistence.*;
 @Entity
 @Table(name="Product")
 public class ProductEntity {
-	@Id @GeneratedValue
+	@Id
+	@SequenceGenerator(name = "ProductSequence", sequenceName = "Product_Seq", allocationSize=1)
+	@GeneratedValue(generator = "ProductSequence", strategy = GenerationType.AUTO)
 	private long id;
 
 	private String name;

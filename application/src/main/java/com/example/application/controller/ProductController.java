@@ -24,10 +24,10 @@ public class ProductController {
 	}
 	@GetMapping(value = "/product/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ProductEntity getProduct(@PathVariable long id){
-			return repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Invalid ride id %s", id)));
+			return repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Invalid product id %s", id)));
 	}
 	@PostMapping(value = "/product", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ProductEntity createRide(@Valid @RequestBody ProductEntity product) {
+	public ProductEntity createProduct(@Valid @RequestBody ProductEntity product) {
 			return repository.save(product);
 	}
 

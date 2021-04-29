@@ -87,33 +87,33 @@ ocid1.compartment.oc1..aaaaaaaadanfxejgerljyzontldg275quuf4sdc4pel52z67f64nas7xr
 
 ```
 oci db autonomous-database create \
-	--profile EMEASPAINSANDBOX \
-	--compartment-id ocid1.compartment.oc1..aaaaaaaadanfxejgerljyzontldg275quuf4sdc4pel52z67f64nas7xrm5q \
-	--cpu-core-count 1 \
-	--data-storage-size-in-tbs 1 \
-	--db-name lbtest \
-	--admin-password 1UPPERCASE#1lowercase \
-	--db-version 19c \
-	--db-workload AJD \
-	--display-name "LiquidBase sample database" \
-	--license-model LICENSE_INCLUDED \
-	--wait-for-state AVAILABLE
+  --profile EMEASPAINSANDBOX \
+  --compartment-id ocid1.compartment.oc1..aaaaaaaadanfxejgerljyzontldg275quuf4sdc4pel52z67f64nas7xrm5q \
+  --cpu-core-count 1 \
+  --data-storage-size-in-tbs 1 \
+  --db-name lbtest \
+  --admin-password 1UPPERCASE#1lowercase \
+  --db-version 19c \
+  --db-workload AJD \
+  --display-name "LiquidBase sample database" \
+  --license-model LICENSE_INCLUDED \
+  --wait-for-state AVAILABLE
 ```
 
 After creation, download the wallet for connection
 ```
 export ADB_ID=$(oci db autonomous-database list \
-	--profile EMEASPAINSANDBOX \
-	--compartment-id ocid1.compartment.oc1..aaaaaaaadanfxejgerljyzontldg275quuf4sdc4pel52z67f64nas7xrm5q \
-	--display-name "LiquidBase sample database" \
-	|jq -r ".data[0].id")
+  --profile EMEASPAINSANDBOX \
+  --compartment-id ocid1.compartment.oc1..aaaaaaaadanfxejgerljyzontldg275quuf4sdc4pel52z67f64nas7xrm5q \
+  --display-name "LiquidBase sample database" \
+  |jq -r ".data[0].id")
 
 oci db autonomous-database generate-wallet \
-	--profile EMEASPAINSANDBOX \
-	--autonomous-database-id $ADB_ID \
-	--password 1UPPERCASE#1lowercase \
-	--file keystore/wallet.zip \
-	--generate-type SINGLE 
+  --profile EMEASPAINSANDBOX \
+  --autonomous-database-id $ADB_ID \
+  --password 1UPPERCASE#1lowercase \
+  --file keystore/wallet.zip \
+  --generate-type SINGLE 
 ```
 
 And uncompress the wallet in 2 well-known directory
@@ -150,34 +150,97 @@ implementation 'com.oracle.database.security:osdt_core'
   * Check the URL: The name is based in dbname + service level, and the address of the wallet is relative to execution directoy. Remember we are using 2 copies of wallet: Use the copy correponding to application (copy uncompressed and unedited)
 
 ### Liquibase
-* Check the instruction to connect to [Oracle Autonomous Database](https://docs.liquibase.com/workflows/database-setup-tutorials/oracle-atp-db.html)
-* Edit the second wallet copy and edit:
-  * The `ojdbc.properties` file
-	  * Uncomment the javax.net.ssl properties lines
-		* Comment out the oracle.net.wallet_location line.
-		* Set javax.net.ssl.trustStorePassword to the wallet password (notice that this is the [admin-password](#provision-an-oci-autonomous-database) assigned to wallet when you downloaded)
-		* Set javax.net.ssl.keyStorePassword to the wallet password. (notice that this is the [admin-password](#provision-an-oci-autonomous-database)
-	* Check the `sqlnet.ora` file
-		* Parameter `SSL_SERVER_DN_MATCH=yes`
 * Generate the project folder structure
 ```
   mkdir <myproject>/database
-	mkdir <myproject>/database/changelogs
-	mkdir <myproject>/database/scripts
+  mkdir <myproject>/database/changelogs
+  mkdir <myproject>/database/scripts
 ```
 
-* Copy
-* Create a master change log file with `changelog_master.xml` in changelogs
-```
-<?xml version="1.0" encoding="UTF-8"?> 
-<databaseChangeLog
-  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd">
+* Create a `liquibase.properties` file in `database` directory, with the parameters to connect to database and to identify the master changelog file. Verify:
 
-</databaseChangeLog>
-```
+  * The database id (normally, the name of database created + connection service)
+  * The `TNS_ADMIN` parameter, pointing to the downloaded walled
+  * The database user and password
+  * The location of changelog master file
+
+  ```
+  driver=oracle.jdbc.driver.OracleDriver
+  url=jdbc:oracle:thin:@lbtest_tp?TNS_ADMIN=/Users/jmalbarran/Projects/ORA/ORA/PoC_LiquidBase/oracle-liquibase/keystore/wallet
+  username=admin
+  password=1UPPERCASE#1lowercase
+  changeLogFile=changelogs/master.xml
+  logLevel=debug
+  liquibase.hub.mode=off	
+  ```
+
+* Create a master change log file with `master.xml` in changelogs
+  ```
+  <?xml version="1.0" encoding="UTF-8"?> 
+  <databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd">
+
+  </databaseChangeLog>
+  ```
+
+* Tag the initial state (empty database) as v0
+  ```
+  liquibase tag v0
+  ```
+
+* If everything runs fine (`Liquibase command 'tag' was executed successfully.`), you can check your database schema, and check the contents of the new tables: `DATABASECHANGELOG` and `DATABASECHANGELOGLOCK`. The table DATABASECHANGELOG will contain only one record, with the tagging
+
+* Create the initial database scripts in folder scripts. Suggested an independent script per object. In this sample, the v1 includes an script for create a sample table (`CreateTable_Product.sql`), and script for creating a function (`CreateFunction_ProductCount.sql`).
+
+* Create a v1 changelog (`changelog_00001_setup_product.xml`) with a changeset per every sql script. Please, notice:
+  * The changeset will be applied in the order they are in the changelog
+  * Be aware of the splitStatement attribute. The function has to have this attribute to false, because is a single statement with multiple ';' in it
+
+  ```
+  <?xml version='1.0' encoding='UTF-8'?>
+  <databaseChangeLog ...>
+    <changeSet id="000010" author="Jose Manuel Albarran">
+      <sqlFile 
+        dbms="oracle"
+        endDelimiter=";"
+        path="../scripts/CreateTable_Product.sql"
+        relativeToChangelogFile="true" 
+        splitStatements="true"
+        stripComments="false"/>
+    </changeSet>
+    <changeSet id="000020" author="Jose Manuel Albarran">
+      <sqlFile 
+        dbms="oracle"
+        endDelimiter=";"
+        path="../scripts/CreateFunction_ProductCount.sql"
+        relativeToChangelogFile="true" 
+        splitStatements="false"
+        stripComments="false"/>
+    </changeSet>	
+  </databaseChangeLog>	
+  ```
+
+* For processing the changelogs in order, there are 2 ALTERNATIVES
+  * Include ALL files in the `changelog` folder. In this case be aware that the files will be processed following the file name order. In this case add the line `<includeAll path="./changelogs"/>` to the master file.
+  * Include change log files in the master file, one by one, and in order. In this case, we have added the following to the master file `	<include file="./changelog_00001_setup_product.xml" relativeToChangelogFile="true" />`
+
+* Process the initial creation with
+
+  ```
+  liquibase update
+  ```
+
+* If everything runs fine (`Liquibase: Update has been successful.`), you can check your database schema, and check the contents of the new tables: `DATABASECHANGELOG` and `DATABASECHANGELOGLOCK`
+
+* End the process tagging this version with the command
+  ```
+  liquibase tag v1
+  ```
+
+
 
 
 
