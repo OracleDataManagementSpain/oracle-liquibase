@@ -1,6 +1,6 @@
 # oracle-liquibase
 
-Sample of using LiquidBase with Oracle database and Jenkins pipeline
+Sample of using SQLcl with Oracle database and Jenkins pipeline
 
 # WORK IN PROGRESS
 BE AWARE: A LOT OF HARDCODED PARAMETERS!
@@ -10,9 +10,18 @@ The following dependencies has to be intalled prior the sample.
 We recommend always to use a package manager.
 
 In our case, we are using MacOS and Homebrew as package manager, so the installation commans will use this.
+### Tools / Commands
+* [Download your jq flavor](https://stedolan.github.io/jq/) 
+
+  MacOS
+  ```
+  brew install jq
+  ```
+
 ### Java
 * Check your installed java version. this sample requires Java 11 or later
 * Download the JDBC drivers maching the Java version and the Oracle Database version used. In this sample we are using openjdk@11 and Autonomous Database for JSON, currently using 19c. So, dowload ojdbc10 version from [here](https://www.oracle.com/database/technologies/appdev/jdbc-ucp-19-10-c-downloads.html)
+
 ### Gradle
 * [Download your Gradle flavor](https://gradle.org/install/) 
 
@@ -39,33 +48,49 @@ In our case, we are using MacOS and Homebrew as package manager, so the installa
 * Create administrator user and password. Optionally, set the e-mail address
 * Set the Jenkins URL. Notice: The change in MacOS can be a little tricky, check this [StackOverflow post](https://stackoverflow.com/questions/7139338/change-jenkins-port-on-macos)
 
+### SQLcl
+* Download last version of SQLcl from [here](https://www.oracle.com/tools/downloads/sqlcl-downloads.html)
+* Uncompress the downloaded zip file in a local directory, and add the sql script to path
+
+	MacOS
+
+  ```
+  sudo unzip ~/Downloads/sqlcl-21.1.0.104.1544.zip -d /usr/local/opt/
+  echo 'export PATH=/usr/local/opt/sqlcl/bin:$PATH' >> .bash_profile
+  ```
+
 ### Springboot CLI
 * [Install SpringBoot client](https://docs.spring.io/spring-boot/docs/current/reference/html/getting-started.html#getting-started-installing-spring-boot)
 
   OSX Homebrew
-```
-brew tap spring-io/tap
-brew install spring-boot
-```
+	```
+	brew tap spring-io/tap
+	brew install spring-boot
+  ```
 
 ### LiquidBase
+
 * [Install your Liquibase CLI flavor](https://www.liquibase.org/download)
 
   OSX Homebrew
-```
-brew install gcc
-brew install liquibase
-liquibase --help
-```
+
+	```
+	brew install gcc
+	brew install liquibase
+	liquibase --help
+	```
+
 * [Download the Oracle JDBC drivers version 10](https://www.oracle.com/database/technologies/appdev/jdbc-downloads.html) and copy to liquibase lib directory. NOTICE: Use jdbc10 drivers, jdbc8 does not work!!!
+
   OSX Homebrew
-```
-cd /usr/local/Cellar/liquibase/4.3.4/libexec/lib
-cp ~/Downloads/ojdbc8-full.tar.gz .
-tar -xvzf ojdbc10-full.tar.gz
-mv OJDBC8-Full/* .
-rm -rf OJDBC8-Full/
-```
+
+  ```
+  cd /usr/local/Cellar/liquibase/4.3.4/libexec/lib
+  cp ~/Downloads/ojdbc8-full.tar.gz .
+  tar -xvzf ojdbc10-full.tar.gz
+  mv OJDBC8-Full/* .
+  rm -rf OJDBC8-Full/
+  ```
 
 
 
@@ -81,8 +106,6 @@ You will need the following parameters:
 
 
 Using OCI CLI, you can create the autonomous database as
-
-ocid1.compartment.oc1..aaaaaaaadanfxejgerljyzontldg275quuf4sdc4pel52z67f64nas7xrm5q
 
 
 ```
@@ -101,6 +124,7 @@ oci db autonomous-database create \
 ```
 
 After creation, download the wallet for connection
+
 ```
 export ADB_ID=$(oci db autonomous-database list \
   --profile EMEASPAINSANDBOX \
@@ -116,9 +140,26 @@ oci db autonomous-database generate-wallet \
   --generate-type SINGLE 
 ```
 
-And uncompress the wallet in 2 well-known directory
-* First will be used to connect from the application
-* Second will be used to connecto from the liquibase client
+* Uncompress the wallet in a well-known directory
+
+* Connect with your SQLcl tool, and create 2 users, corresponding to dev and pre environments
+  ```
+
+  export TNS_ADMIN='./keystore/wallet'
+  sql admin/1UPPERCASE#1lowercase@lbtest_tp <<-'EOF'
+
+  CREATE USER dev IDENTIFIED BY UPPERCASE1lowercase;
+  GRANT CREATE SESSION TO dev;
+
+  CREATE USER pre IDENTIFIED BY UPPERCASE1lowercase;
+  GRANT CREATE SESSION TO pre;
+
+  quit
+	EOF
+
+  ```
+
+
 
 ### Create a SpringBoot sample project
 * Create an empty SpringBoot project, using the [initializr](https://start.spring.io/) wizard or directly using `spring init` command.
