@@ -33,7 +33,7 @@ sql ${DB_USER}/${DB_PASSWORD}@lbtest_tp >pre-deploy-version.log <<-EOF
 set echo on
 cd database/liquibase
 lb update -changelog controller.xml -log
-update DATABASECHANGELOG SET TAG="'${VERSION}'";
+update DATABASECHANGELOG SET TAG='${VERSION}' WHERE TAG IS NULL;
 QUIT
 EOF
 
