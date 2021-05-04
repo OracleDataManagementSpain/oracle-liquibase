@@ -22,10 +22,10 @@ source setenv.sh
 
 # Generate Liquibase controller and schema
 sql ${DB_USER}/${DB_PASSWORD}@lbtest_tp<<-EOF
-SET ECHO ON
+set echo on
 CD database/liquibase
 LB gencontrolfile
-LB genschema -label ${VERSION}
+LB genschema
 quit
 EOF
 

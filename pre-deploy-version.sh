@@ -26,8 +26,9 @@ git reset --hard ${VERSION}
 
 # Update schema based in Liquibase controller
 sql ${DB_USER}/${DB_PASSWORD}@lbtest_tp >pre-deploy-version.log <<-EOF
-SET ECHO ON
-lb update -label ${VERSION} -log
+set echo on
+cd database/liquibase
+lb update -changelog controller.xml -log
 QUIT
 EOF
 
