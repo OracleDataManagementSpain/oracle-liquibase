@@ -22,9 +22,10 @@ source setenv.sh
 
 # Move to the selected version
 # git tag -d ${VERSION} || :
+git fetch --all
 git merge origin/dev
 git reset --hard ${VERSION}
-git push
+git push -f 
 git push -f --tags
 
 # Update schema based in Liquibase controller
@@ -32,6 +33,7 @@ sql ${DB_USER}/${DB_PASSWORD}@lbtest_tp >pre-deploy-version.log <<-EOF
 set echo on
 cd database/liquibase
 lb update -changelog controller.xml -log
+update DATABASECHANGELOG SET TAG="'${VERSION}'";
 QUIT
 EOF
 

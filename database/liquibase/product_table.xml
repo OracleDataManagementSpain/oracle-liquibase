@@ -5,7 +5,7 @@
 	xmlns:n0="http://www.oracle.com/xml/ns/dbchangelog-ext" 
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog 
 	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd">
-	<changeSet id="a3e42e94751bf6fc54a9c2869feef1ab122f8df3" author="(DEV)-Generated" failOnError="false"    >
+	<changeSet id="b61d54fb450757c1a0ba0825b174741c4a735cbe" author="(DEV)-Generated" failOnError="false"    >
 		<n0:createSxmlObject objectName="PRODUCT" objectType="TABLE" ownerName="DEV"   >
 			<n0:source><![CDATA[
   <TABLE xmlns="http://xmlns.oracle.com/ku" version="1.0">
@@ -22,6 +22,13 @@
             <DATATYPE>VARCHAR2</DATATYPE>
             <LENGTH>50</LENGTH>
             <COLLATE_NAME>USING_NLS_COMP</COLLATE_NAME>
+         </COL_LIST_ITEM>
+         <COL_LIST_ITEM>
+            <NAME>PRICE</NAME>
+            <DATATYPE>NUMBER</DATATYPE>
+            <PRECISION>10</PRECISION>
+            <SCALE>2</SCALE>
+            <DEFAULT>0.0</DEFAULT>
          </COL_LIST_ITEM>
       </COL_LIST>
       <PRIMARY_KEY_CONSTRAINT_LIST>

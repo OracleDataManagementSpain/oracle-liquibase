@@ -10,6 +10,7 @@ public class ProductEntity {
 	private long id;
 
 	private String name;
+	private double price;
 
 	public ProductEntity() {
 	}
@@ -24,6 +25,14 @@ public class ProductEntity {
 
 	public long getId() {
 		return this.id;
+	}
+
+	public void setPrice(double price) {
+		this.price=price;
+	}
+
+	public double getPrice() {
+		return this.price;
 	}
 
 	public void setName(String name) {
