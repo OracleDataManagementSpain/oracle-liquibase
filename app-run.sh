@@ -2,6 +2,6 @@
 
 set -ex
 
-export $(cat .env|grep SPRING_DATASOURCE|xargs)
+source setenv.sh
 gradle :application:bootRun
 

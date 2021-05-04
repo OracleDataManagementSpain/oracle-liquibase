@@ -2,11 +2,12 @@ server.port: 7000
 
 spring.datasource:
   driver-class-name: oracle.jdbc.driver.OracleDriver
-  # url: "jdbc:oracle:thin:@lbtest_tp?TNS_ADMIN=/Users/jmalbarran/Projects/ORA/ORA/PoC_LiquidBase/oracle-liquibase/keystore/wallet"
-  # username: admin
-  # password: 1UPPERCASE#1lowercase
+  # url: "jdbc:oracle:thin:@lbtest_tp?TNS_ADMIN=${TNS_ADMIN}"
+  # username: "${DB_USER}"
+  # password: "${DB_PASSWORD}"
 
 spring.jpa:
+  open-in-view: false
   show-sql: true
   database: oracle
 
