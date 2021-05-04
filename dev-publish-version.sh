@@ -9,6 +9,13 @@ if [ -z "$1" ]
 		VERSION="$1"
 fi
 
+CURRENT_ENV=${PWD##*/}
+if [ "${CURRENT_ENV}" != "dev" ]
+	then
+		echo "This script can only run in dev environment"
+		exit 2
+fi
+
 
 # Set environment variables
 source setenv.sh
@@ -29,5 +36,5 @@ git add -A
 git add -A database/liquibase
 git commit -m "Deploy version ${VERSION}"
 git tag $VERSION
-git push
+git push --tags
 
