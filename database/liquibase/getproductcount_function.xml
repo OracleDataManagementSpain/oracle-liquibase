@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog 
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:n0="http://www.oracle.com/xml/ns/dbchangelog-ext" 
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog 
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd">
+	<changeSet id="1aba10bdb396450a8da3705bc24b1d7ec47c0ea6" author="(DEV)-Generated" failOnError="false"    >
+		<n0:createOracleFunction objectName="GETPRODUCTCOUNT" objectType="FUNCTION" ownerName="DEV"   >
+			<n0:source><![CDATA[
+  CREATE OR REPLACE EDITIONABLE FUNCTION "DEV"."GETPRODUCTCOUNT" RETURN NUMBER AS
+	l_count NUMBER;
+BEGIN
+	SELECT COUNT(*) 
+	INTO l_count
+	FROM Product;
+
+	RETURN l_count;
+END;]]></n0:source>
+		</n0:createOracleFunction>
+	</changeSet>
+</databaseChangeLog>

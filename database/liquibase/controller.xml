@@ -6,4 +6,5 @@
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd">
   <include file="product_seq_sequence.xml"/> 
   <include file="product_table.xml"/> 
+  <include file="getproductcount_function.xml"/> 
 </databaseChangeLog> 

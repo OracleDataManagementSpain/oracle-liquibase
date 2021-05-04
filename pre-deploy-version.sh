@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -e
+set -ex
 
 if [ -z "$1" ]
 	then
@@ -21,8 +21,11 @@ fi
 source setenv.sh
 
 # Move to the selected version
+# git tag -d ${VERSION} || :
 git merge origin/dev
 git reset --hard ${VERSION}
+git push
+git push -f --tags
 
 # Update schema based in Liquibase controller
 sql ${DB_USER}/${DB_PASSWORD}@lbtest_tp >pre-deploy-version.log <<-EOF
