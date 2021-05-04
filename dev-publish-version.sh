@@ -35,6 +35,7 @@ git add -A
 # Add newly added liquibase
 git add -A database/liquibase
 git commit -m "Deploy version ${VERSION}"
-git tag $VERSION
+git tag -f $VERSION
+git push
 git push --tags
 
