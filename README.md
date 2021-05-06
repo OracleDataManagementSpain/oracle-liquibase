@@ -70,6 +70,8 @@ In our case, we are using MacOS and Homebrew as package manager, so the installa
 * Create administrator user and password. Optionally, set the e-mail address
 * Set the Jenkins URL. Notice: The change in MacOS can be a little tricky, check this [StackOverflow post](https://stackoverflow.com/questions/7139338/change-jenkins-port-on-macos)
 
+* Navigate to [tools configuration](http://localhost:8181/configureTools/) and add your gradle folder
+
 ### SQLcl
 * Download last version of SQLcl from [here](https://www.oracle.com/tools/downloads/sqlcl-downloads.html)
 * Uncompress the downloaded zip file in a local directory, and add the sql script to path
