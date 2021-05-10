@@ -5,7 +5,7 @@
 	xmlns:n0="http://www.oracle.com/xml/ns/dbchangelog-ext" 
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog 
 	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd">
-	<changeSet id="b61d54fb450757c1a0ba0825b174741c4a735cbe" author="(DEV)-Generated" failOnError="false"    >
+	<changeSet id="744e9455a01888aea4e870f09a71c9828673703a" author="(DEV)-Generated" failOnError="false"    >
 		<n0:createSxmlObject objectName="PRODUCT" objectType="TABLE" ownerName="DEV"   >
 			<n0:source><![CDATA[
   <TABLE xmlns="http://xmlns.oracle.com/ku" version="1.0">
@@ -29,6 +29,12 @@
             <PRECISION>10</PRECISION>
             <SCALE>2</SCALE>
             <DEFAULT>0.0</DEFAULT>
+         </COL_LIST_ITEM>
+         <COL_LIST_ITEM>
+            <NAME>STOCK</NAME>
+            <DATATYPE>NUMBER</DATATYPE>
+            <PRECISION>5</PRECISION>
+            <SCALE>0</SCALE>
          </COL_LIST_ITEM>
       </COL_LIST>
       <PRIMARY_KEY_CONSTRAINT_LIST>

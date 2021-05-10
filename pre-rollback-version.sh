@@ -8,6 +8,7 @@ if [ "${CURRENT_ENV}" != "pre" ]
 		exit 2
 fi
 
+source setenv.sh
 
 # Temp file
 TEMPFILE=$(mktemp)

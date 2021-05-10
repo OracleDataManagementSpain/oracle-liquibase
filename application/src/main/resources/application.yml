@@ -1,4 +1,6 @@
+app.edition: EDITION_MAIN
 server.port: 7000
+
 
 spring.datasource:
   #driver-class-name: oracle.jdbc.driver.OracleDriver

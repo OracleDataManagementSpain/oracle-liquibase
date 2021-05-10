@@ -166,11 +166,17 @@ oci db autonomous-database generate-wallet \
 
 * Uncompress the wallet in a well-known directory
 
-* Connect with your SQLcl tool, and create 2 users, corresponding to dev and pre environments
+* Connect with your SQLcl tool, and create 2 users, corresponding to dev and pre environments. The pre user is 'editioned', so it can connect to 2 different editions
   ```
-
   export TNS_ADMIN='./keystore/wallet'
   sql admin/1UPPERCASE#1lowercase@lbtest_tp <<-'EOF'
+
+  CREATE EDITION EDITION_MAIN AS CHILD OF ORA$BASE;
+  CREATE EDITION EDITION_TEST AS CHILD OF EDITION_MAIN;
+  ALTER DATABASE DEFAULT EDITION = EDITION_MAIN;
+  GRANT USE ON EDITION EDITION_MAIN TO PUBLIC;
+  GRANT USE ON EDITION EDITION_TEST TO PUBLIC;
+  ALTER DATABASE DEFAULT EDITION = EDITION_MAIN;
 
   CREATE USER dev IDENTIFIED BY UPPERCASE1lowercase;
   GRANT CREATE SESSION TO dev;
@@ -179,8 +185,9 @@ oci db autonomous-database generate-wallet \
 
   CREATE USER pre IDENTIFIED BY UPPERCASE1lowercase;
   GRANT CREATE SESSION TO pre;
-  GRANT DWROLE to pre;
+  GRANT DWROLE TO pre;
   GRANT UNLIMITED TABLESPACE TO pre;
+  ALTER USER pre ENABLE EDITIONS;
 
   quit
 	EOF
