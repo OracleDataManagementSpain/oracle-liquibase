@@ -7,7 +7,6 @@
   <include file="product_seq_sequence.xml"/> 
   <include file="product_table.xml"/> 
   <include file="lastedition_function.xml"/> 
-  <include file="getgreeting_function.xml"/> 
   <include file="greeting_function.xml"/> 
   <include file="productcount_function.xml"/> 
 </databaseChangeLog> 

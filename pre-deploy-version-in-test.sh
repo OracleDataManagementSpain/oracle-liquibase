@@ -11,6 +11,7 @@ if [ -z "$1" ]
 		exit 1
 	else
 		VERSION="$1"
+		VERSION=${VERSION^^}
 fi
 
 CURRENT_ENV=${PWD##*/}
