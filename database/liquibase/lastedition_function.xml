@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog 
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:n0="http://www.oracle.com/xml/ns/dbchangelog-ext" 
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog 
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd">
+	<changeSet id="d4b54db00bbbabb32fc4229055de2dd444507d4c" author="(DEV)-Generated" failOnError="false"    >
+		<n0:createOracleFunction objectName="LASTEDITION" objectType="FUNCTION" ownerName="DEV"   >
+			<n0:source><![CDATA[
+  CREATE OR REPLACE EDITIONABLE FUNCTION "DEV"."LASTEDITION" RETURN DBA_EDITIONS.EDITION_NAME%TYPE AS 
+    last_edition DBA_EDITIONS.EDITION_NAME%TYPE := 'ORA$BASE';
+    next_edition DBA_EDITIONS.EDITION_NAME%TYPE := 'ORA$BASE';
+BEGIN
+    WHILE TRUE
+    LOOP
+        BEGIN
+            SELECT EDITION_NAME 
+            INTO next_edition 
+            FROM DBA_EDITIONS 
+            WHERE PARENT_EDITION_NAME=next_edition;
+        EXCEPTION
+            WHEN NO_DATA_FOUND THEN
+                EXIT;
+            WHEN OTHERS THEN
+                RAISE;
+        END;
+        last_edition:=next_edition;
+    END LOOP;
+
+  RETURN last_edition;
+END LASTEDITION;]]></n0:source>
+		</n0:createOracleFunction>
+	</changeSet>
+</databaseChangeLog>

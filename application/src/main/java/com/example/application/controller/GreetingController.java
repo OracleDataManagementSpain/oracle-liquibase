@@ -1,9 +1,8 @@
 package com.example.application.controller;
 
-import java.math.BigDecimal;
-
 import javax.sql.DataSource;
 
+import com.example.application.persistence.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
@@ -13,29 +12,27 @@ import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.web.bind.annotation.*;
 
 
-import com.example.application.persistence.*;
-
 @RestController
-public class ProductCountController {
+public class GreetingController {
 	private final DataSource dataSource;
 
 	@Autowired
-	public ProductCountController(DataSource dataSource) {
+	public GreetingController(DataSource dataSource) {
 		this.dataSource=dataSource;
 	}
 
-	@GetMapping(value = "/productCount", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ProductCountEntity getProductCount() {
+	@GetMapping(value = "/greeting", produces = MediaType.APPLICATION_JSON_VALUE)
+	public GreetingEntity getGreeting() {
 		SimpleJdbcCall call;
 		SqlParameterSource params;
 
-		BigDecimal count;
+		String greeting;
 
-		call=new SimpleJdbcCall(dataSource).withFunctionName("ProductCount");
+		call=new SimpleJdbcCall(dataSource).withFunctionName("Greeting");
 		params=new MapSqlParameterSource();
-		count=call.executeFunction(BigDecimal.class, params);
+		greeting=call.executeFunction(String.class, params);
 
-		return new ProductCountEntity(count.longValue());
+		return new GreetingEntity(greeting);
 
 	}
 

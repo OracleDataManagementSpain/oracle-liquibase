@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog 
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:n0="http://www.oracle.com/xml/ns/dbchangelog-ext" 
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog 
+	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd">
+	<changeSet id="d2285ae5b62b58449ba558d78d25bdd40e574daa" author="(DEV)-Generated" failOnError="false"    >
+		<n0:createOracleFunction objectName="GETGREETING" objectType="FUNCTION" ownerName="DEV"   >
+			<n0:source><![CDATA[
+  CREATE OR REPLACE EDITIONABLE FUNCTION "DEV"."GETGREETING" RETURN NUMBER AS
+BEGIN
+	RETURN 'Hello, world (v6)';
+END;
+]]></n0:source>
+		</n0:createOracleFunction>
+	</changeSet>
+</databaseChangeLog>

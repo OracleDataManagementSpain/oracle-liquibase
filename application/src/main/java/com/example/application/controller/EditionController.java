@@ -27,8 +27,22 @@ public class EditionController {
 		this.dataSource=dataSource;
 	}
 
-	@GetMapping(value = "/edition", produces = MediaType.APPLICATION_JSON_VALUE)
-	public EditionEntity getEdition() {
+	@GetMapping(value = "/edition/last", produces = MediaType.APPLICATION_JSON_VALUE)
+	public EditionEntity getLastEdition() {
+		SimpleJdbcCall call;
+		SqlParameterSource params;
+
+		String edition;
+
+		call=new SimpleJdbcCall(dataSource).withFunctionName("LastEdition");
+		params=new MapSqlParameterSource(); // Empty
+		edition=call.executeFunction(String.class, params);
+
+		return new EditionEntity(edition);
+	}
+
+	@GetMapping(value = "/edition/current", produces = MediaType.APPLICATION_JSON_VALUE)
+	public EditionEntity getCurrentEdition() {
 		// SimpleJdbcCall call;
 		// SqlParameterSource params;
 
@@ -48,9 +62,6 @@ public class EditionController {
 			String.class);
 
 		return new EditionEntity(edition);
-
-
-
 	}
 
 	@PostMapping(value = "/edition", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -60,7 +71,7 @@ public class EditionController {
 		jdbcTemplate=new JdbcTemplate(dataSource);
 		jdbcTemplate.execute(String.format("ALTER SESSION SET EDITION = %s",edition.getEdition()));
 
-		return getEdition();
+		return getCurrentEdition();
 	}
 
 }
