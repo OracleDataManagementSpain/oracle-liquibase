@@ -4,7 +4,8 @@ CREATE OR REPLACE FUNCTION ProductCount RETURN NUMBER AS
 BEGIN
 	SELECT COUNT(*) 
 	INTO l_count
-	FROM Product;
+	FROM Product
+	WHERE IsActive=1;
 
 	RETURN l_count;
 END;

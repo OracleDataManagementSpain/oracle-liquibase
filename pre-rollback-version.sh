@@ -1,22 +1,27 @@
 #!/usr/bin/env bash
 set -ex
 
+# Set environment variables
+source setenv.sh
+
+# Check environment and parameters
 CURRENT_ENV=${PWD##*/}
 if [ "${CURRENT_ENV}" != "pre" ]
 	then
-		echo "This script can only run in pre environment"
+		>&2 echo "This script can only run in pre environment"
 		exit 2
 fi
 
-source setenv.sh
 
 # Temp file
 TEMPFILE=$(mktemp)
-echo "==============================================" >>pre-rollback-version.log
-echo "Rolling back version on $(date)" >>pre-rollback-version.log
 
-# Get last tag
-sql ${DB_USER}/${DB_PASSWORD}@lbtest_tp >>pre-rollback-version.log <<-EOF
+# Start
+echo "==============================================" 
+echo "Rolling back last version on $(date)"
+
+# Get last edition
+sql ${DB_USER}/${DB_PASSWORD}@lbtest_tp  <<-EOF
 SET PAGES 0
 SET FEEDBACK OFF
 SET TERM OFF
@@ -27,15 +32,16 @@ SET HEAD OFF
 SET FEED OFF
 SET ECHO OFF
 SPOOL $TEMPFILE
-SELECT MIN(TAG) FROM DATABASECHANGELOG WHERE ORDEREXECUTED=(SELECT MAX(ORDEREXECUTED) FROM DATABASECHANGELOG);
+SELECT LastEdition() FROM DUAL;
 SPOOL OFF
 QUIT
 EOF
 
-LASTTAG=$(cat $TEMPFILE && rm $TEMPFILE)
+LAST_EDITION=$(cat $TEMPFILE && rm $TEMPFILE)
+LAST_VERSION=$(echo $LAST_EDITION|sed 's/EDITION_//g')
 
-# Get last tag count
-sql ${DB_USER}/${DB_PASSWORD}@lbtest_tp >>pre-rollback-version.log <<-EOF
+# Get previous edition
+sql ${DB_USER}/${DB_PASSWORD}@lbtest_tp <<-EOF
 SET PAGES 0
 SET FEEDBACK OFF
 SET TERM OFF
@@ -46,45 +52,71 @@ SET HEAD OFF
 SET FEED OFF
 SET ECHO OFF
 SPOOL $TEMPFILE
-SELECT COUNT(*) FROM DATABASECHANGELOG WHERE TAG='${LASTTAG}';
+SELECT PARENT_EDITION_NAME FROM ALL_EDITIONS WHERE EDITION_NAME='${LAST_EDITION}';
+SPOOL OFF
+QUIT
+EOF
+
+PREVIOUS_EDITION=$(cat $TEMPFILE && rm $TEMPFILE)
+PREVIOUS_VERSION=$(echo $PREVIOUS_EDITION|sed 's/EDITION_//g')
+
+LAST_GIT_VERSION=$(git describe --abbrev=0 --tags)
+
+if [ ${LAST_VERSION} != ${LAST_GIT_VERSION} ]
+	then
+		>&2 echo "Inconsistent state: Last GIT version=${LAST_GIT_VERSION} is differente the last edition version ${LAST_VERSION}" 
+		exit 3
+fi
+echo "Rolling back ${LAST_VERSION} for everybody using edition ${LAST_EDITION}"
+echo "Returning to version ${PREVIOUS_VERSION}"  
+
+# Rolling back: EDITION, LIQUIBASE (SCHEMA) AND GIT
+## Return to previous edition and drop last edition
+echo "Replace current edition with $PREVIOUS_EDITION"  
+sql ${DB_USER}/${DB_PASSWORD}@lbtest_tp  <<-EOF
+SET ECHO ON
+ALTER DATABASE DEFAULT EDITION = $PREVIOUS_EDITION;
+ALTER SESSION SET EDITION = $PREVIOUS_EDITION;
+DROP EDITION $LAST_EDITION CASCADE;
+QUIT
+EOF
+
+## Get last tag count
+sql ${DB_USER}/${DB_PASSWORD}@lbtest_tp <<-EOF
+SET PAGES 0
+SET FEEDBACK OFF
+SET TERM OFF
+SET TIMING OFF
+SET PAUSE OFF
+SET TRIMSPOOL ON
+SET HEAD OFF
+SET FEED OFF
+SET ECHO OFF
+SPOOL $TEMPFILE
+SELECT COUNT(*) FROM DATABASECHANGELOG WHERE TAG='${LAST_VERSION}';
 SPOOL OFF
 QUIT
 EOF
 
 COUNTLASTTAG=$(cat $TEMPFILE && rm $TEMPFILE)
 
-
-# Rolling back schema based in Liquibase controller
-echo "Rolling back $COUNTLASTTAG update from version $LASTTAG" >>pre-rollback-version.log
-sql ${DB_USER}/${DB_PASSWORD}@lbtest_tp >>pre-rollback-version.log <<-EOF
-set echo on
-cd database/liquibase
-lb rollback -changelog controller.xml -log -count $COUNTLASTTAG
-QUIT
+if [ ${COUNTLASTTAG} -eq 0 ]
+	then
+		>&2 echo "WARNING: No DDLs pending to rollback"
+	else
+		## Rolling back schema based in Liquibase controller
+		echo "Rolling back $COUNTLASTTAG updates from version $LAST_VERSION"
+		sql ${DB_USER}/${DB_PASSWORD}@lbtest_tp <<-EOF
+		set echo on
+		cd database/liquibase
+		lb rollback -changelog controller.xml -log -count $COUNTLASTTAG
+		QUIT
 EOF
+fi 
 
-
-# Return to previous version the source code
-##  Get last tag -> Now is the last available version
-sql ${DB_USER}/${DB_PASSWORD}@lbtest_tp >>pre-rollback-version.log <<-EOF
-SET PAGES 0
-SET FEEDBACK OFF
-SET TERM OFF
-SET TIMING OFF
-SET PAUSE OFF
-SET TRIMSPOOL ON
-SET HEAD OFF
-SET FEED OFF
-SET ECHO OFF
-SPOOL $TEMPFILE
-SELECT MIN(TAG) FROM DATABASECHANGELOG WHERE ORDEREXECUTED=(SELECT MAX(ORDEREXECUTED) FROM DATABASECHANGELOG);
-SPOOL OFF
-QUIT
-EOF
-
-VERSION=$(cat $TEMPFILE && rm $TEMPFILE)
-
-git reset --hard ${VERSION}
+## Return source code to previous version
+echo "Return GIT repository to ${PREVIOUS_VERSION}"
+git reset --hard ${PREVIOUS_VERSION}
 git push -f 
 git push -f --tags
 

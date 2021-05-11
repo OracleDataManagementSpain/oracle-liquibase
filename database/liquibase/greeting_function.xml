@@ -5,12 +5,12 @@
 	xmlns:n0="http://www.oracle.com/xml/ns/dbchangelog-ext" 
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog 
 	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd">
-	<changeSet id="90e2d470139fe29c6736807169b3739906315a02" author="(DEV)-Generated" failOnError="false"    >
+	<changeSet id="5385831c47777529d2a67462e2029e73f235af3e" author="(DEV)-Generated" failOnError="false"    >
 		<n0:createOracleFunction objectName="GREETING" objectType="FUNCTION" ownerName="DEV"   >
 			<n0:source><![CDATA[
   CREATE OR REPLACE EDITIONABLE FUNCTION "DEV"."GREETING" RETURN VARCHAR2 AS
 BEGIN
-	RETURN 'Hello, world (v6)';
+	RETURN 'Hello, world from a new version v7';
 END;
 ]]></n0:source>
 		</n0:createOracleFunction>

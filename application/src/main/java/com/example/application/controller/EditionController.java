@@ -43,16 +43,6 @@ public class EditionController {
 
 	@GetMapping(value = "/edition/current", produces = MediaType.APPLICATION_JSON_VALUE)
 	public EditionEntity getCurrentEdition() {
-		// SimpleJdbcCall call;
-		// SqlParameterSource params;
-
-		// BigDecimal count;
-
-		// call=new SimpleJdbcCall(dataSource).withFunctionName("getProductCount");
-		// params=new MapSqlParameterSource();
-		// count=call.executeFunction(BigDecimal.class, params);
-
-		// return new EditionEntity(count.longValue());
 		JdbcTemplate jdbcTemplate;
 		String edition;
 

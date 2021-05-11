@@ -5,7 +5,7 @@
 	xmlns:n0="http://www.oracle.com/xml/ns/dbchangelog-ext" 
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog 
 	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd">
-	<changeSet id="a570133e50070f7a011defe1d9a20c9a5ecd45b0" author="(DEV)-Generated" failOnError="false"    >
+	<changeSet id="0a6141718c140b8575e8e983b8f9abeda0ec73ae" author="(DEV)-Generated" failOnError="false"    >
 		<n0:createOracleFunction objectName="PRODUCTCOUNT" objectType="FUNCTION" ownerName="DEV"   >
 			<n0:source><![CDATA[
   CREATE OR REPLACE EDITIONABLE FUNCTION "DEV"."PRODUCTCOUNT" RETURN NUMBER AS
@@ -13,11 +13,11 @@
 BEGIN
 	SELECT COUNT(*) 
 	INTO l_count
-	FROM Product;
+	FROM Product
+	WHERE IsActive=1;
 
 	RETURN l_count;
-END;
-]]></n0:source>
+END;]]></n0:source>
 		</n0:createOracleFunction>
 	</changeSet>
 </databaseChangeLog>

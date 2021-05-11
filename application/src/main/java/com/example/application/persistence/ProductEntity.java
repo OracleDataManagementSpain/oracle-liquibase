@@ -11,6 +11,7 @@ public class ProductEntity {
 
 	private String name;
 	private double price;
+	private int isactive;
 
 	public ProductEntity() {
 	}
@@ -41,6 +42,14 @@ public class ProductEntity {
 
 	public String getName() {
 		return this.name;
+	}
+
+	public void setIsactive(int isActive) {
+		this.isactive=isActive;
+	}
+
+	public int getIsactive() {
+		return this.isactive;
 	}
 
 }

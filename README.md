@@ -192,6 +192,7 @@ oci db autonomous-database generate-wallet \
   ALTER USER pre ENABLE EDITIONS;
   GRANT CREATE ANY EDITION, DROP ANY EDITION TO pre;  
   GRANT SELECT ON DBA_EDITIONS TO pre;
+  GRANT ALTER DATABASE TO pre;
   -- Only during development, enable debug
   GRANT DEBUG ANY PROCEDURE TO pre;
   GRANT DEBUG CONNECT SESSION TO pre;

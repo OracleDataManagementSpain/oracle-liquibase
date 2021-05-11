@@ -5,13 +5,13 @@
 	xmlns:n0="http://www.oracle.com/xml/ns/dbchangelog-ext" 
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog 
 	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd">
-	<changeSet id="aa4cfb1d23ee9fc5e09006fd19d2b9a42e4d416a" author="(DEV)-Generated" failOnError="false"    >
+	<changeSet id="5a702ae41fc9f2897d117ecd18487f6208cbaf2b" author="(DEV)-Generated" failOnError="false"    >
 		<n0:createSxmlObject objectName="PRODUCT_SEQ" objectType="SEQUENCE" ownerName="DEV"   >
 			<n0:source><![CDATA[
   <SEQUENCE xmlns="http://xmlns.oracle.com/ku" version="1.0">
    <SCHEMA>DEV</SCHEMA>
    <NAME>PRODUCT_SEQ</NAME>
-   <START_WITH>21</START_WITH>
+   <START_WITH>41</START_WITH>
    <INCREMENT>1</INCREMENT>
    <MINVALUE>1</MINVALUE>
    <MAXVALUE>999999999999999999999999999</MAXVALUE>
